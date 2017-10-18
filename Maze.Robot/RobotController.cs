@@ -1,4 +1,7 @@
 ﻿using Maze.Library;
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Maze.Solver
 {
@@ -8,6 +11,9 @@ namespace Maze.Solver
     public class RobotController
     {
         private IRobot robot;
+        private bool reachedEnd;
+        private List<Point> checkedPoints;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RobotController"/> class
@@ -16,6 +22,8 @@ namespace Maze.Solver
         public RobotController(IRobot robot)
         {
             // Store robot for later use
+            reachedEnd = false;
+            checkedPoints = new List<Point>();
             this.robot = robot;
         }
 
@@ -34,13 +42,60 @@ namespace Maze.Solver
             // Here you have to add your code
 
             // Trivial sample algorithm that can just move right
-            var reachedEnd = false;
+
+            Point start = new Point(0, 0);
+
+            
             robot.ReachedExit += (_, __) => reachedEnd = true;
 
-            while (!reachedEnd)
+            this.checkIfPossible(start);
+
+
+            if (this.reachedEnd == false)
             {
-                robot.Move(Direction.Right);
+                robot.HaltAndCatchFire();
             }
         }
+
+
+        public void checkIfPossible(Point p)
+        {
+            if(this.checkedPoints.Contains(p) == false && reachedEnd == false)
+            {
+                this.checkedPoints.Add(p);
+                if(this.robot.TryMove(Direction.Up) == true &&this.reachedEnd == false)
+                {
+                    this.checkIfPossible(new Point (p.X, p.Y - 1));
+                    checkEnd(Direction.Down);
+                }
+                if (this.robot.TryMove(Direction.Down) == true && this.reachedEnd == false)
+                {
+                    this.checkIfPossible(new Point(p.X, p.Y + 1));
+                    checkEnd(Direction.Up);
+                }
+                if (this.robot.TryMove(Direction.Left) == true && this.reachedEnd == false)
+                {
+                    this.checkIfPossible(new Point(p.X - 1, p.Y));
+                    checkEnd(Direction.Right);
+                }
+                if (this.robot.TryMove(Direction.Right) == true && this.reachedEnd == false)
+                {
+                    this.checkIfPossible(new Point(p.X + 1, p.Y));
+                    checkEnd(Direction.Left);
+                }
+
+            }
+        }
+
+
+        public void checkEnd(Direction dir)
+        {
+            if(this.reachedEnd == false)
+            {
+                robot.Move(dir);
+            }
+        }
+
+
     }
 }
