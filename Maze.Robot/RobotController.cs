@@ -41,6 +41,8 @@ namespace Maze.Solver
         {
             // Here you have to add your code
 
+            // Tip: Remove comments that are no longer valid. This confuses other
+            // developers who have to maintain your code.
             // Trivial sample algorithm that can just move right
 
             Point start = new Point(0, 0);
@@ -57,7 +59,7 @@ namespace Maze.Solver
             }
         }
 
-
+        // Tip: In C#, member names should start with a capital letter
         public void checkIfPossible(Point p)
         {
             if(this.checkedPoints.Contains(p) == false && reachedEnd == false)
